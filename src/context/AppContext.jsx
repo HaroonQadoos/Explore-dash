@@ -13,6 +13,11 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
+      const token = localStorage.getItem("token"); // check if user is logged in
+      if (!token) {
+        setLoading(false); // no token, so public page
+        return;
+      }
       try {
         const userRes = await api.get("/auth/me");
         const user = userRes.data;
