@@ -57,9 +57,7 @@ const NewPost = () => {
                     headers: { "Content-Type": "multipart/form-data" },
                   });
 
-                  const imageUrl = res.data.url.startsWith("http")
-                    ? res.data.url
-                    : `http://localhost:4000${res.data.url}`;
+                  const imageUrl = res.data.url;
 
                   const range = quill.getSelection(true);
                   quill.insertEmbed(range.index, "image", imageUrl);
@@ -119,16 +117,14 @@ const NewPost = () => {
       data.append("body", formData.body); // plain text
       data.append("htmlBody", formData.htmlBody);
       if (formData.image instanceof File) {
-        data.append("image", formData.image);
+        data.append("image", formData.image); // File
       } else if (formData.image && typeof formData.image === "string") {
-        data.append("imageUrl", formData.image); // send as a separate field
-      } // the actual File object
+        data.append("image", formData.image); // Cloudinary URL string
+      }
 
       data.append("tags", formData.tags);
       data.append("status", statusType);
-      await api.post("/posts", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/posts", data);
       toast.success(
         statusType === "published"
           ? "Post published successfully"
