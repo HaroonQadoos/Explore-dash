@@ -98,11 +98,9 @@ const HomePage = () => {
                 >
                   <img
                     src={
-                      post.image?.startsWith("http")
-                        ? post.image
-                        : post.image
-                        ? `http://localhost:4000${post.image}`
-                        : "/placeholder.png"
+                      post.image
+                        ? post.image // Cloudinary URL
+                        : "/placeholder.png" // fallback
                     }
                     alt={post.title}
                     className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
