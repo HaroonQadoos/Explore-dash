@@ -115,23 +115,31 @@ const NewPost = () => {
     try {
       const data = new FormData();
       data.append("title", formData.title);
-      data.append("body", formData.body); // plain text
+      data.append("body", formData.body);
       data.append("htmlBody", formData.htmlBody);
+      data.append("tags", formData.tags);
+      data.append("status", statusType);
+
+      // ✅ Upload image first if it's a File
       if (formData.image instanceof File) {
-        // upload to Cloudinary first
         const uploadData = new FormData();
         uploadData.append("image", formData.image);
+
         const uploadRes = await api.post("/upload", uploadData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        data.append("image", uploadRes.data.url);
+
+        data.append("image", uploadRes.data.url); // <-- send URL to backend
       } else if (formData.image && typeof formData.image === "string") {
-        data.append("image", formData.image);
+        data.append("image", formData.image); // already a URL
+      }
+      if (!formData.image) {
+        toast.error("Please select a cover image");
+        return;
       }
 
-      data.append("tags", formData.tags);
-      data.append("status", statusType);
       await api.post("/posts", data);
+
       toast.success(
         statusType === "published"
           ? "Post published successfully"
@@ -139,10 +147,10 @@ const NewPost = () => {
       );
       navigate("/dashboard");
     } catch (err) {
+      console.error(err);
       toast.error(err.response?.data?.message || "Failed to post");
     }
   };
-
   return (
     <div
       className="min-h-screen  px-4 py-12"
