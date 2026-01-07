@@ -58,6 +58,7 @@ const NewPost = () => {
                   });
 
                   const imageUrl = res.data.url;
+                  console.log("Cloudinary URL:", imageUrl);
 
                   const range = quill.getSelection(true);
                   quill.insertEmbed(range.index, "image", imageUrl);
