@@ -4,7 +4,7 @@ import api from "../api/axios";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
-import DragAndDropInput from "../components/DragAndDropInput ";
+import DragAndDropInput from "../components/DragAndDropInput";
 
 const NewPost = () => {
   const [image, setImage] = useState(null);
@@ -117,9 +117,15 @@ const NewPost = () => {
       data.append("body", formData.body); // plain text
       data.append("htmlBody", formData.htmlBody);
       if (formData.image instanceof File) {
-        data.append("image", formData.image); // File
+        // upload to Cloudinary first
+        const uploadData = new FormData();
+        uploadData.append("image", formData.image);
+        const uploadRes = await api.post("/upload", uploadData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        data.append("image", uploadRes.data.url);
       } else if (formData.image && typeof formData.image === "string") {
-        data.append("image", formData.image); // Cloudinary URL string
+        data.append("image", formData.image);
       }
 
       data.append("tags", formData.tags);

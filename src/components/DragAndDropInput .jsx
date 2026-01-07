@@ -6,9 +6,14 @@ const DragAndDropInput = ({ file, onSelect, onRemove, disabled }) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (!file) setPreview(null);
+    if (!file) {
+      setPreview(null);
+    } else if (typeof file === "string") {
+      setPreview(file); // handle URL preview
+    } else if (file instanceof File) {
+      setPreview(URL.createObjectURL(file));
+    }
   }, [file]);
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
